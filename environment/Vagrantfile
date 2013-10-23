@@ -39,5 +39,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   # run the bootstrap script
-  config.vm.provision :shell, :inline => "cd /vagrant && " + (ENV['DEBUG'] == nil ? "" : "DEBUG=1") + "./bootstrap.sh"
+  config.vm.provision :shell, :inline => "cd /vagrant && " + (ENV['DEBUG'] == nil ? "" : "DEBUG=1") + " ./bootstrap.sh"
 end
