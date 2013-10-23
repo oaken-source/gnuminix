@@ -1,0 +1,34 @@
+
+GNU/MINIX 
+  - project codename 'DAWN'
+
+ This poject aims at creating an environment on which a load of bash scripts
+ derived from the Linux From Scratch project[1] are capable of bootstrapping
+ a running GNU/Minix Operating System, powered by Vagrant[2].
+
+ Minix[3] is a Microkernel, which we hope will work well with the GNU userland
+ to provide the open source community with an excellent alternative to Linux.
+
+ The current build of GNU/Minix uses LFS version 7.4, and Minix version 3.2.1
+
+Setup Guide:
+
+ To prepare your system for using this environment, run the provided script:
+  $> ./prepare-host.sh
+ and follow the instructions given.
+
+ To assemble the environment, run
+  $> vagrant up
+
+ And to access the (headless) machine, run
+  $> vagrant ssh
+
+Required Packages:
+
+ vagrant, virtualbox, bash
+
+References:
+
+ [1] - http://www.linuxfromscratch.org/lfs/
+ [2] - http://www.vagrantup.com/
+ [3] - http://www.minix3.org/
