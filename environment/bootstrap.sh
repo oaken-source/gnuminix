@@ -19,10 +19,12 @@
  #    along with this program.  If not, see <http://www.gnu.org/licenses/>.   #
  ############################################################################## 
 
- # This file is used to prepare the host on which the bootstrapping virtual
- # machine is executed. This is the only script of this project that requries
- # human interaction, everything else is completely automated.
+ # This script is the entry to the bootstrapping of GNU/Minix. This  script is
+ # responsible for setting up the environment inside the virtual machine, e.g.
+ # partitioning of the minix disk, mounting, user management, and calling the
+ # build subscript.
  ############################################################################## 
+
 
 set -e
 set -u
@@ -31,16 +33,4 @@ if [ -n "${DEBUG:-}" ]; then
   set -x
 fi
 
-# fetch LFS book
-if [ ! -f LFS-BOOK-7.4.pdf ]; then
-  echo " [*] fetching LFS-BOOK-7.4.pdf"
-  wget -q http://www.linuxfromscratch.org/lfs/downloads/stable/LFS-BOOK-7.4.pdf
-fi
 
-# check for vagrant installation
-if ! vagrant --help > /dev/null; then
-  echo " [!] missing vagrant. install vagrant and continue"
-  exit 1
-fi
-
-echo "done."

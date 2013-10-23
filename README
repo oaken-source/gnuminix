@@ -23,6 +23,14 @@ Setup Guide:
  And to access the (headless) machine, run
   $> vagrant ssh
 
+Configuration:
+ 
+ Every script in this project listens for an environment variable DEBUG. If 
+ such a variable is defined to a String of non-zero length, then all scripts
+ will be executed with 'set -x' defined in their headers.
+ This allows for detailed information on what is executed when and makes 
+ wathing the bootstrap process a little less dull :)
+
 Required Packages:
 
  vagrant, virtualbox, bash

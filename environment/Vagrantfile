@@ -1,6 +1,27 @@
 
-# This file describes the environment of the Ubuntu 12.04 LTS virtual machine 
-# used to bootstrap GNU/Minix.
+ ##############################################################################
+ #                               GNU / Minix                                  #
+ #                                                                            #
+ #    Copyright (C) 2013  Andreas Grapentin                                   #
+ #                                                                            #
+ #    This program is free software: you can redistribute it and/or modify    #
+ #    it under the terms of the GNU General Public License as published by    #
+ #    the Free Software Foundation, either version 3 of the License, or       #
+ #    (at your option) any later version.                                     #
+ #                                                                            #
+ #    This program is distributed in the hope that it will be useful,         #
+ #    but WITHOUT ANY WARRANTY; without even the implied warranty of          #
+ #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           #
+ #    GNU General Public License for more details.                            #
+ #                                                                            #
+ #    You should have received a copy of the GNU General Public License       #
+ #    along with this program.  If not, see <http://www.gnu.org/licenses/>.   #
+ ############################################################################## 
+
+ # This file describes the environment of the Ubuntu 12.04 LTS virtual machine 
+ # used to bootstrap GNU/Minix.
+ ############################################################################## 
+
 
 VAGRANTFILE_API_VERSION = "2"
 
@@ -16,4 +37,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     vb.customize ['createhd', '--filename', '../minix_disk.vdi', '--size', 500 * 1024]
     vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', '../minix_disk.vdi']
   end
+
+  # run the bootstrap script
+  config.vm.provision :shell, :inline => "cd /vagrant && " + (ENV['DEBUG'] == nil ? "" : "DEBUG=1") + "./bootstrap.sh"
 end
