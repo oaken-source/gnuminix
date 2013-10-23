@@ -1,6 +1,6 @@
 
 GNU/MINIX 
-  - project codename 'DAWN'
+  - project codename 'DAWN' 
 
  This poject aims at creating an environment on which a load of bash scripts
  derived from the Linux From Scratch project[1] are capable of bootstrapping
@@ -26,6 +26,26 @@ Setup Guide:
 Required Packages:
 
  vagrant, virtualbox, bash
+
+How It Works:
+
+ Step1:
+  Bootstrap a blank Ubuntu 12.04 LTS virtual machine using Vagrant
+ Step2:
+  Run a load of scripts in the vm that compile and bootstrap GNU/Minix on an
+  external virtual disk
+ Step3:
+  Hang this disk into a physically identical virtual machine and hope it works
+ Step4:
+  Profit!
+
+ Based on this, there are plans to go further and create a proper distribution
+ including a package manager, etc. However, most of this is postponed until 
+ there is a decently running GNU/Minix Bootstrap Build.
+
+Current Status:
+
+ Creating Infrastructure. Watch the NEWS file for a log of status updates
 
 References:
 
