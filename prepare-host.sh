@@ -18,9 +18,4 @@ if ! vagrant --help > /dev/null; then
   exit 1
 fi
 
-if [ -z "$(vagrant box list | grep precise32)" ]; then
-  echo " [*] importing precise32 box for vagrant"
-  vagrant box add precise32 http://files.vagrantup.com/precise32.box > /dev/null
-fi
-
 echo "done."
