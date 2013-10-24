@@ -34,5 +34,3 @@ if [ -n "${DEBUG:-}" ]; then
 fi
 
 env
-
-echo $PATH

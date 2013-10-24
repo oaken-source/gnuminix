@@ -35,6 +35,7 @@ fi
 
 export ROOT=$(pwd)
 export GNU=/mnt/gnu
+export MAKEFLAGS="-j$(($VM_CPUS + 1))"
 
 # installing required packages
 echo " [*] installing and configuring required host packages"
@@ -80,15 +81,18 @@ echo "gnu:gnu" | chpasswd
 chown gnu $GNU/{tools,sources}
 
 echo " [*] starting up packages setup job"
-echo 'exec env -i HOME=$HOME TERM=$TERM PS1='\''\u:\w\$ '\'' /bin/bash' > /home/gnu/.bash_profile
+echo 'source ~/.bashrc
+exec env -i DEBUG=$DEBUG HOME=$HOME ROOT=$ROOT TERM=$TERM GNU=$GNU GNU_TGT=$GNU_TGT LC_ALL=$LC_ALL PATH=$PATH MAKEFLAGS=$MAKEFLAGS /bin/bash' > /home/gnu/.bash_profile
 echo 'set +h
 umask 022
 GNU=/mnt/gnu
 LC_ALL=POSIX
 GNU_TGT=$(uname -m)-mfs-kminix-gnu
 PATH=/tools/bin:/bin:/usr/bin
+ROOT='$ROOT'
+MAKEFLAGS='$MAKEFLAGS'
 export GNU LC_ALL GNU_TGT PATH' > /home/gnu/.bashrc
 
-su gnu -c 'source ~/.bashrc && exec env -i DEBUG=$DEBUG HOME=$HOME ROOT=$ROOT TERM=$TERM GNU=$GNU GNU_TGT=$GNU_TGT LC_ALL=$LC_ALL PATH=$PATH ./scripts/complete-build.sh'
+su gnu -c 'source ~/.bashrc && exec env -i DEBUG=$DEBUG HOME=$HOME ROOT=$ROOT TERM=$TERM GNU=$GNU GNU_TGT=$GNU_TGT LC_ALL=$LC_ALL PATH=$PATH MAKEFLAGS=$MAKEFLAGS ./scripts/complete-build.sh'
 
 echo "done."

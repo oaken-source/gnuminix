@@ -25,6 +25,10 @@
 
 VAGRANTFILE_API_VERSION = "2"
 
+# modify these variables to control the resources allocated to the machine:
+VM_CPUS = "4"
+VM_MEMORY = "4096" #MB
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Ubuntu 12.04 LTS
   config.vm.box = "precise32"
@@ -32,12 +36,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # get box from vagrant website, if not available
   config.vm.box_url = "http://files.vagrantup.com/precise32.box"
 
-  # attach the virtual disk that holds GNU/Minix
+  # attach the virtual disk that holds GNU/Minix, and give a resource boost from the host system
   config.vm.provider :virtualbox do |vb|
     vb.customize ['createhd', '--filename', '../minix_disk.vdi', '--size', 500 * 1024]
     vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', '../minix_disk.vdi']
+    
+    vb.customize [ "modifyvm", :id, "--memory", VM_MEMORY ]
+    vb.customize [ "modifyvm", :id, "--ioapic", "on" ]
+    vb.customize [ "modifyvm", :id, "--cpus", VM_CPUS ]   
   end
 
   # run the bootstrap script
-  config.vm.provision :shell, :inline => "cd /vagrant && " + (ENV['DEBUG'] == nil ? "" : "DEBUG=1") + " ./bootstrap.sh"
+  config.vm.provision :shell, :inline => "cd /vagrant && " + (ENV['DEBUG'] == nil ? "" : "DEBUG=1") + " VM_CPUS=" + VM_CPUS + " ./bootstrap.sh"
 end
