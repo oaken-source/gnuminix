@@ -76,11 +76,11 @@ if ! id -u gnu >/dev/null 2>&1; then
   groupadd gnu
   useradd -s /bin/bash -g gnu -m -k /dev/null gnu
 fi
-passwd -d gnu
+echo "gnu:gnu" | chpasswd
 chown gnu $GNU/{tools,sources}
 
 echo " [*] starting up packages setup job"
-echo 'exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash' > /home/gnu/.bash_profile
+echo 'exec env -i HOME=$HOME TERM=$TERM PS1='\''\u:\w\$ '\'' /bin/bash' > /home/gnu/.bash_profile
 echo 'set +h
 umask 022
 GNU=/mnt/gnu
@@ -88,5 +88,7 @@ LC_ALL=POSIX
 GNU_TGT=$(uname -m)-mfs-kminix-gnu
 PATH=/tools/bin:/bin:/usr/bin
 export GNU LC_ALL GNU_TGT PATH' > /home/gnu/.bashrc
+
+su gnu -c 'source ~/.bashrc && exec env -i DEBUG=$DEBUG HOME=$HOME ROOT=$ROOT TERM=$TERM GNU=$GNU GNU_TGT=$GNU_TGT LC_ALL=$LC_ALL PATH=$PATH ./scripts/complete-build.sh'
 
 echo "done."
