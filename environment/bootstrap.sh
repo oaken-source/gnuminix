@@ -33,6 +33,9 @@ if [ -n "${DEBUG:-}" ]; then
   set -x
 fi
 
+export ROOT=$(pwd)
+export GNU=/mnt/gnu
+
 # installing required packages
 echo " [*] installing and configuring required host packages"
 apt-get update -qq
@@ -40,8 +43,8 @@ apt-get install -yqq vim build-essential bash binutils bison bzip2 coreutils dif
 ln -fs /bin/bash /bin/sh
 
 echo " [*] preparing and mounting partitions"
-mkdir -p /mnt/gnu
-if [ -z "$(cat /etc/mtab | grep /mnt/gnu)" ]; then
+mkdir -p $GNU
+if [ -z "$(cat /etc/mtab | grep $GNU)" ]; then
   parted -s -- /dev/sdb mklabel gpt
   parted -s -- /dev/sdb mkpart primary ext2 0 32mb &> /dev/null
   parted -s -- /dev/sdb mkpart primary linux-swap 32mb 1056mb
@@ -51,18 +54,39 @@ if [ -z "$(cat /etc/mtab | grep /mnt/gnu)" ]; then
   mkfs.ext3 -q /dev/sdb3
   mkswap /dev/sdb2 > /dev/null
 
-  mount /dev/sdb3 /mnt/gnu 
-  mkdir -p /mnt/gnu/boot
-  mount /dev/sdb1 /mnt/gnu/boot
+  mount /dev/sdb3 $GNU 
+  mkdir -p $GNU/boot
+  mount /dev/sdb1 $GNU/boot
   swapon /dev/sdb2
 fi
 
 echo " [*] fetching guest packages"
-mkdir -p /mnt/gnu/sources
-chmod a+wt /mnt/gnu/sources
-wget -q -i all-packages -P /mnt/gnu/sources
-pushd /mnt/gnu/sources
-md5sums -c all-packages.MD5
-popd
+mkdir -p $GNU/sources
+chmod a+wt $GNU/sources
+wget -q -i required-packages -P $GNU/sources
+#pushd $GNU/sources
+#md5sum -c --quiet --strict $ROOT/required-packages.MD5
+#popd
+
+mkdir -p $GNU/tools
+ln -fs $GNU/tools /
+
+echo " [*] doing user management"
+if ! id -u gnu >/dev/null 2>&1; then
+  groupadd gnu
+  useradd -s /bin/bash -g gnu -m -k /dev/null gnu
+fi
+passwd -d gnu
+chown gnu $GNU/{tools,sources}
+
+echo " [*] starting up packages setup job"
+echo 'exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash' > /home/gnu/.bash_profile
+echo 'set +h
+umask 022
+GNU=/mnt/gnu
+LC_ALL=POSIX
+GNU_TGT=$(uname -m)-mfs-kminix-gnu
+PATH=/tools/bin:/bin:/usr/bin
+export GNU LC_ALL GNU_TGT PATH' > /home/gnu/.bashrc
 
 echo "done."
