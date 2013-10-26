@@ -19,10 +19,7 @@
  #    along with this program.  If not, see <http://www.gnu.org/licenses/>.   #
  ############################################################################## 
 
- # This script is intended to be run as user `gnu` in a prepared virtual 
- # bootstrapping environment. Its purpose is calling the setup scripts of the
- # individual bootstrap stages. All builds probably only work with i686 
- # targets atm.
+ # This is the build script corresponding to chapter 5.4 of LFS2
  ############################################################################## 
 
 
@@ -33,5 +30,42 @@ if [ -n "${DEBUG:-}" ]; then
   set -x
 fi
 
-./5.4.binutils-2.23.2-pass1.sh
-./5.5.gcc-4.8.1-pass1.sh
+echo " [*] 5.4. binutils-2.23.2 Pass 1"
+
+pushd /mnt/gnu/sources &> /dev/null
+
+tar -xf binutils-2.23.2.tar.bz2
+
+cd binutils-2.23.2
+sed -i -e 's/@colophon/@@colophon/' \
+       -e 's/doc@cygnus.com/doc@@cygnus.com/' bfd/doc/bfd.texinfo
+
+patch -s -i $ROOT/patches/config.sub.patch
+
+mkdir -p ../binutils-build
+cd ../binutils-build
+
+../binutils-2.23.2/configure   \
+    --prefix=/tools            \
+    --with-sysroot=$GNU        \
+    --with-lib-path=/tools/lib \
+    --target=$GNU_TGT          \
+    --disable-nls              \
+    --disable-werror &> /mnt/gnu/logs/5.4.conf.log \
+    || (echo " [!] configure failed. see /mnt/gnu/logs/5.4.conf.log" && exit 1)
+
+make &> /mnt/gnu/logs/5.4.build.log \
+    || (echo " [!] build failed. see /mnt/gnu/logs/5.4.build.log" && exit 1)
+
+case $(uname -m) in
+  x86_64) mkdir -p /tools/lib && ln -s lib /tools/lib64 ;;
+esac
+
+make install &> /mnt/gnu/logs/5.4.install.log \
+    || (echo " [!] install failed. see /mnt/gnu/logs/5.4.install.log" && exit 1)
+
+cd ..
+
+rm -rf binutils-2.23.2 binutils-build
+popd &> /dev/null
+

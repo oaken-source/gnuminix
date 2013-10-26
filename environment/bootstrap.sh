@@ -35,7 +35,7 @@ fi
 
 export ROOT=$(pwd)
 export GNU=/mnt/gnu
-export MAKEFLAGS="-j$(($VM_CPUS + 1))"
+export MAKEFLAGS="-j$(($(cat /proc/cpuinfo | grep processor | tail -n1 | cut -d' ' -f2) + 2))"
 
 # installing required packages
 echo " [*] installing and configuring required host packages"
@@ -65,12 +65,14 @@ echo " [*] fetching guest packages"
 mkdir -p $GNU/sources
 chmod a+wt $GNU/sources
 wget -q -i required-packages -P $GNU/sources
-#pushd $GNU/sources
-#md5sum -c --quiet --strict $ROOT/required-packages.MD5
-#popd
+pushd $GNU/sources &> /dev/null
+md5sum -c --quiet --strict $ROOT/required-packages.MD5
+popd &> /dev/null
 
 mkdir -p $GNU/tools
 ln -fs $GNU/tools /
+
+mkdir -p $GNU/logs
 
 echo " [*] doing user management"
 if ! id -u gnu >/dev/null 2>&1; then
@@ -78,7 +80,7 @@ if ! id -u gnu >/dev/null 2>&1; then
   useradd -s /bin/bash -g gnu -m -k /dev/null gnu
 fi
 echo "gnu:gnu" | chpasswd
-chown gnu $GNU/{tools,sources}
+chown gnu $GNU/{tools,sources,logs}
 
 echo " [*] starting up packages setup job"
 echo 'source ~/.bashrc
@@ -93,6 +95,6 @@ ROOT='$ROOT'
 MAKEFLAGS='$MAKEFLAGS'
 export GNU LC_ALL GNU_TGT PATH' > /home/gnu/.bashrc
 
-su gnu -c 'source ~/.bashrc && exec env -i DEBUG=$DEBUG HOME=$HOME ROOT=$ROOT TERM=$TERM GNU=$GNU GNU_TGT=$GNU_TGT LC_ALL=$LC_ALL PATH=$PATH MAKEFLAGS=$MAKEFLAGS ./scripts/complete-build.sh'
+su gnu -c 'cd scripts && source ~/.bashrc && exec env -i DEBUG=$DEBUG HOME=$HOME ROOT=$ROOT TERM=$TERM GNU=$GNU GNU_TGT=$GNU_TGT LC_ALL=$LC_ALL PATH=$PATH MAKEFLAGS=$MAKEFLAGS ./complete-build.sh'
 
 echo "done."
