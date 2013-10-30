@@ -98,7 +98,7 @@ make &> /mnt/gnu/logs/5.5.build.log \
 make install &> /mnt/gnu/logs/5.5.install.log \
     || (echo " [!] install failed. see /mnt/gnu/logs/5.5.install.log" && exit 1)
 
-ln -s libgcc.a `$GNU_TGT-gcc -print-libgcc-file-name | sed 's/libgcc/&_eh/'`
+ln -fs libgcc.a `$GNU_TGT-gcc -print-libgcc-file-name | sed 's/libgcc/&_eh/'`
 
 cd ..
 

@@ -59,6 +59,10 @@ if [ -z "$(cat /etc/mtab | grep $GNU)" ]; then
   mkdir -p $GNU/boot
   mount /dev/sdb1 $GNU/boot
   swapon /dev/sdb2
+
+  echo "/dev/sdb3	$GNU	ext3	defaults	0	2" >> /etc/fstab
+  echo "/dev/sdb1	$GNU/boot	ext2	defaults	0	2" >> /etc/fstab
+  echo "/dev/sdb2	none	swap	sw	0	0" >> /etc/fstab
 fi
 
 echo " [*] fetching guest packages"

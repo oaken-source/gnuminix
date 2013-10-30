@@ -19,10 +19,8 @@
  #    along with this program.  If not, see <http://www.gnu.org/licenses/>.   #
  ############################################################################## 
 
- # This script is intended to be run as user `gnu` in a prepared virtual 
- # bootstrapping environment. Its purpose is calling the setup scripts of the
- # individual bootstrap stages. All builds probably only work with i686 
- # targets atm.
+ # This is the build script corresponding roughly to chapter 5.6 of LFS, with
+ # the substitution of the minix kernel for the linux kernel.
  ############################################################################## 
 
 
@@ -33,6 +31,9 @@ if [ -n "${DEBUG:-}" ]; then
   set -x
 fi
 
-./5.4.binutils-2.23.2-pass1.sh
-./5.5.gcc-4.8.1-pass1.sh
-./5.6.minix-3.2.1-API-headers.sh
+echo " [*] 5.6. minix-3.2.1 API headers"
+
+pushd /mnt/gnu/sources &> /dev/null
+
+popd &> /dev/null
+
